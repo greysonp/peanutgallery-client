@@ -1,17 +1,68 @@
-panelPadding = 10px
+panelPadding = 15px
 panelWidth = 300px
 
-h1Color = #4886ff
+btnColor = #a0c0f0
+btnHighlighColor = #a6c8f6
+shadeDefault = #fff
+shadeHighlight = #f6f6f6
+
+// Yellow
+yellowBkgColor = #fe7
+yellowTextColor = #663
 
 .gifics-panel
     position fixed
     left -1 * panelWidth
     height 100%
     width 300px
-    background-color white
+    background-color yellowBkgColor
+    color yellowTextColor
     z-index 200000000
     box-shadow 0 0 10px 0 #000
+    font-family 'Raleway-Regular', sans-serif
 
-h1
-    font-size 24px
-    color h1Color
+    &>h1, &>h2
+        padding panelPadding
+        margin 0
+
+    &>h1
+        font-size 36px
+
+    &>h2
+        font-size 28px
+
+    ul.gifics-groups
+        width 100%
+        margin 0
+        padding 0
+        li
+            display block
+            margin 0 
+            padding panelPadding
+            background-color yellowBkgColor
+            border-bottom 2px solid yellowTextColor
+
+            &:hover
+                background-color yellowTextColor
+                color yellowBkgColor
+
+            h2 
+                margin 0
+
+            p
+                margin 0
+                padding 0 0 0 0
+    .gifics-btn
+        display inline-block
+        background-color yellowTextColor
+        color yellowBkgColor
+        text-decoration none
+        font-size 20px
+        font-weight bold
+        text-align center
+        margin panelPadding 0 panelPadding panelPadding
+        padding panelPadding
+
+        &:hover
+            text-decoration none
+            background-color

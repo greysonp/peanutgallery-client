@@ -30,10 +30,10 @@ closePanel = () ->
 constructBaseHtml = () ->
     $('body').prepend """
         <div id="js-gifics-panel" class="gifics-panel">
-            {{info}}
+            <h1>HieroGIFics</h1>
+            <h2>Loading...</h2>
         </div>
     """
-    templatePanel getPanel().html(), {"info": "With great power comes great responsibility."}
 
 # =======================================================
 # DATE RETRIEVAL
@@ -41,7 +41,7 @@ constructBaseHtml = () ->
 
 fillMenuScreen = () ->
     await $.get chrome.extension.getURL("html/main_menu.html"), defer data
-    
+
     context = {
         "groups": [
             {
@@ -92,3 +92,12 @@ destroyPanelHtml = () ->
 # Retrievs jQuery object of panel
 getPanel = () ->
     return $('#js-gifics-panel')
+
+embedFonts = () ->
+    # Normal
+    normalNode = document.createElement ("style");
+    normalNode.type = "text/css"
+    url = chrome.extension.getURL "css/fonts/Raleway-Regular.ttf"
+    normalNode.textContent = "@font-face { font-family: 'Raleway-Regular'; src: url('#{url}'); }"
+    document.head.appendChild normalNode
+embedFonts()
