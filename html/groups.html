@@ -1,0 +1,13 @@
+<h1>{{groupName}}</h1>
+<h2>Pages</h2>
+<ul class="gifics-pages">
+    {{#each pages}}
+        <li>
+            <h2>{{title}}</h2>
+            <h3>By {{author.firstName}} {{author.lastName}}, {{date}}</h3>
+            <p>{{lastComment.body}}</p>
+            <p>at {{lastComment.date}}</p>
+            <p>{{numComments}} comments.</p>
+        </li>
+    {{/each}}
+</ul>

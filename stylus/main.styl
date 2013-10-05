@@ -31,27 +31,29 @@ yellowTextColor = #663
     &>h2
         font-size 28px
 
-    ul.gifics-groups
+    li
+        display block
+        margin 0 
+        padding panelPadding
+        background-color yellowBkgColor
+        border-bottom 2px solid yellowTextColor
+
+        &:hover
+            background-color yellowTextColor
+            color yellowBkgColor
+        p
+            margin 0
+            padding 0 0 0 0
+
+    ul
         width 100%
         margin 0
         padding 0
-        li
-            display block
-            margin 0 
-            padding panelPadding
-            background-color yellowBkgColor
-            border-bottom 2px solid yellowTextColor
 
-            &:hover
-                background-color yellowTextColor
-                color yellowBkgColor
+        &.gifics-groups li h2 
+            margin 0
 
-            h2 
-                margin 0
-
-            p
-                margin 0
-                padding 0 0 0 0
+            
     .gifics-btn
         display inline-block
         background-color yellowTextColor
@@ -62,7 +64,9 @@ yellowTextColor = #663
         text-align center
         margin panelPadding 0 panelPadding panelPadding
         padding panelPadding
+        border 2px solid yellowTextColor
 
         &:hover
             text-decoration none
-            background-color
+            background-color yellowBkgColor
+            color yellowTextColor

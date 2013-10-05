@@ -1,5 +1,25 @@
 # =======================================================
-# BACKGROUND INTE
+# STATE VARIABLES
+# =======================================================
+
+STATE = {
+    "MAIN_MENU": 0,
+    "GROUP": 1,
+    "INTERACT": 2,
+    "LOG_IN": 3
+}
+_state = STATE.MAIN_MENU
+_groups = {}
+_pages = {}
+_comments = {}
+
+_loadingHtml = """
+        <h1>HieroGIFics</h1>
+        <h2>Loading...</h2>
+    """
+
+# =======================================================
+# BACKGROUND INTERACTION
 # =======================================================
 
 # Listens for button click
@@ -28,36 +48,127 @@ closePanel = () ->
         destroyPanelHtml()
 
 constructBaseHtml = () ->
-    $('body').prepend """
-        <div id="js-gifics-panel" class="gifics-panel">
-            <h1>HieroGIFics</h1>
-            <h2>Loading...</h2>
-        </div>
-    """
+    $('body').prepend "<div id='js-gifics-panel' class='gifics-panel'></div>"
+    getPanel().html _loadingHtml
 
 # =======================================================
 # DATE RETRIEVAL
 # =======================================================
 
 fillMenuScreen = () ->
+    _state = STATE.MAIN_MENU
     await $.get chrome.extension.getURL("html/main_menu.html"), defer data
-
-    context = {
+    _groups = {
         "groups": [
             {
-                "name": "Family",
-                "newShares": 13
+                "id": 1
+                "name": "Spidey-Friends",
+                "newShares": 2
             },
             {   
+                "id": 2
                 "name": "Sinister Six",
                 "newShares": 6
             }
         ]
     }
-    templatePanel data, context
+    templatePanel data, _groups
+    $('.gifics-groups li').each (index) ->
+        $(this).click ->
+            fillGroupScreen _groups.groups[index]
 
-fillGroupSelect = () ->
-    return
+fillGroupScreen = (group) ->
+    _state = STATE.GROUP
+    getPanel().html _loadingHtml
+
+    _pages = {
+        "pages": [
+            {
+                "id": 1,
+                "title": "Spider-Man Wiki",
+                "url": "http://en.wikipedia.org/wiki/Spider-man",
+                "date": new Date(),
+                "numComments": 3,
+                "lastComment": {
+                    "body": "You're dumb.",
+                    "date": new Date()
+                },
+                "author": {
+                    "id": 1,
+                    "firstName": "Greyson",
+                    "lastName": "Parrelli"
+                }
+            },
+            {
+                "id": 2,
+                "title": "Venom Wiki",
+                "url": "http://en.wikipedia.org/wiki/Venom",
+                "date": new Date(),
+                "numComments": 2,
+                "lastComment": {
+                    "body": "You're dumb.",
+                    "date": new Date()
+                },
+                "author": {
+                    "id": 2,
+                    "firstName": "Michael",
+                    "lastName": "Toth"
+                }
+            }
+        ]   
+    }
+    _pages["groupName"] = group.name
+    await $.get chrome.extension.getURL("html/groups.html"), defer data 
+    templatePanel data, _pages
+
+
+fillInteractScreen = (pageId) ->
+    _state = STATE.INTERACT
+    getPanel().html _loadingHtml
+
+    # Should get data from server
+    _comments = {
+        "comments": [
+            {
+                "id": 1,
+                "author": {
+                    "id": 1
+                    "firstName": "Greyson",
+                    "lastName": "Parrelli",
+                },
+                "date": new Date(),
+                "body": "This site so cool.",
+                "likes": 2
+            },
+            {
+                "id": 2,
+                "author": {
+                    "id": 2
+                    "firstName": "Michael",
+                    "lastName": "Toth",
+                },
+                "date": new Date(),
+                "body": "No it isn't.",
+                "likes": 1
+            },
+            {
+                "id": 3,
+                "author": {
+                    "id": 1
+                    "firstName": "Greyson",
+                    "lastName": "Parrelli",
+                },
+                "date": new Date(),
+                "body": "Yes it is.",
+                "likes": 3
+            }
+        ]
+    }
+
+    await $.get chrome.extension.getURL("html/main_menu.html"), defer data
+
+
+
 
 # =======================================================
 # LOCAL STORAGE
@@ -101,3 +212,5 @@ embedFonts = () ->
     normalNode.textContent = "@font-face { font-family: 'Raleway-Regular'; src: url('#{url}'); }"
     document.head.appendChild normalNode
 embedFonts()
+
+
