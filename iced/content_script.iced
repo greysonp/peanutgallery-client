@@ -52,7 +52,7 @@ constructBaseHtml = () ->
     getPanel().html _loadingHtml
 
 # =======================================================
-# DATE RETRIEVAL
+# SCREEN DRAWING
 # =======================================================
 
 fillMenuScreen = () ->
@@ -90,8 +90,13 @@ fillGroupScreen = (group) ->
                 "date": new Date(),
                 "numComments": 3,
                 "lastComment": {
-                    "body": "You're dumb.",
-                    "date": new Date()
+                    "body": "I don't like this.",
+                    "date": new Date(),
+                    "author": {
+                        "id": 2,
+                        "firstName": "Michael",
+                        "lastName": "Toth"
+                    }
                 },
                 "author": {
                     "id": 1,
@@ -107,7 +112,12 @@ fillGroupScreen = (group) ->
                 "numComments": 2,
                 "lastComment": {
                     "body": "You're dumb.",
-                    "date": new Date()
+                    "date": new Date(),
+                    "author": {
+                        "id": 1,
+                        "firstName": "Greyson",
+                        "lastName": "Parrelli"
+                    }
                 },
                 "author": {
                     "id": 2,
@@ -117,6 +127,11 @@ fillGroupScreen = (group) ->
             }
         ]   
     }
+    # Format dates
+    for p in _pages.pages
+        p.date = formatDate p.date
+        p.lastComment.date = formatDate p.lastComment.date
+
     _pages["groupName"] = group.name
     await $.get chrome.extension.getURL("html/groups.html"), defer data 
     templatePanel data, _pages
@@ -205,7 +220,7 @@ getPanel = () ->
     return $('#js-gifics-panel')
 
 embedFonts = () ->
-    # Normal
+    # NormalG
     normalNode = document.createElement ("style");
     normalNode.type = "text/css"
     url = chrome.extension.getURL "css/fonts/Raleway-Regular.ttf"
@@ -213,4 +228,32 @@ embedFonts = () ->
     document.head.appendChild normalNode
 embedFonts()
 
+formatDate = (dateString) ->
+    date = new Date(dateString)
+    # dotw = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    # months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+    # dotwString = dotw[date.getDay()]
+    # monthString = months[date.getMonth()]
+    # dateString = date.getDate()
+    # yearString = date.getFullYear()
+
+    # return dotwString + ', ' + monthString + ' ' + dateString + ', ' + yearString; 
+    return "#{date.getMonth()}/#{date.getDay()}/#{date.getFullYear()}"
+
+formatTime = (dateString) ->
+    date = new Date(dateString)
+    isAM = true
+    hours = date.getHours()
+    if hours > 12
+        isAM = false
+        hours -= 12
+    
+    minutes = date.getMinutes()
+    if minutes.toString().length < 2
+        minutes = '0' + minutes
+
+    if isAM
+        return "#{hours}:#{minutes} AM"
+    else
+        return "#{hours}:#{minutes} PM"

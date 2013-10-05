@@ -4,10 +4,11 @@
     {{#each pages}}
         <li>
             <h2>{{title}}</h2>
-            <h3>By {{author.firstName}} {{author.lastName}}, {{date}}</h3>
-            <p>{{lastComment.body}}</p>
-            <p>at {{lastComment.date}}</p>
-            <p>{{numComments}} comments.</p>
+            <h3>By {{author.firstName}} {{author.lastName}} on {{date}}</h3>
+            <p class="comments">{{numComments}} comments.</p>
+            <p class="body">{{lastComment.body}}</p>
+            <h3 class="date">By {{lastComment.author.firstName}} {{lastComment.author.lastName}} at {{lastComment.date}}</h3>
+            
         </li>
     {{/each}}
 </ul>
