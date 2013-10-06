@@ -6,7 +6,8 @@ STATE = {
     "MAIN_MENU": 0,
     "GROUP": 1,
     "INTERACT": 2,
-    "LOG_IN": 3
+    "LOG_IN": 3,
+    "DRAWING": 4
 }
 _state = STATE.MAIN_MENU
 _groups = {}
@@ -17,6 +18,10 @@ _loadingHtml = """
         <h1>HieroGIFics</h1>
         <h2>Loading...</h2>
     """
+_doodles = []
+
+_lastPoint = null
+POINT_INTERVAL = 2
 
 # =======================================================
 # BACKGROUND INTERACTION
@@ -46,6 +51,13 @@ openPanel = () ->
             fillMenuScreen data.userId
         else
             fillLoginScreen()
+
+        getPanel().mouseenter ->
+            if _state is STATE.DRAWING
+                getPanel().animate {"left":0}, 250
+        getPanel().mouseleave ->
+            if _state is STATE.DRAWING
+                getPanel().animate {"left":"-285px"}, 250
 
 # Closes the panel, then destroys the html fo the panel
 closePanel = () ->
@@ -209,12 +221,77 @@ fillInteractScreen = (page) ->
 
     #Add event for draw button
     $('#js-gifics-draw').click ->
-        enterDrawMode()
+        # Don't add a canvas if one exists
+        if $('#js-gifics-canvas').length > 0
+            exitDrawMode()
+        else
+            enterDrawMode()
+
+exitDrawMode = ->
+    _state = STATE.INTERACT
+    $('#js-gifics-draw').html """<i class="icon-pencil"></i> Draw"""
+    getPanel().animate {"left": 0}, 250
 
 enterDrawMode = ->
+    _state = STATE.DRAWING
+
+    $('#js-gifics-draw').html """<i class="icon-ban-circle"></i> Stop"""
+
     $('body').prepend """
         <canvas id="js-gifics-canvas" class="gifics-canvas"></canvas>
     """
+
+    # Animate the panel to hide mode
+    getPanel().animate {"left": "-285px"}, 250
+
+    # =================
+    # DRAWING STUFF
+    # =================
+    canvas = $('#js-gifics-canvas')[0]
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    ctx = canvas.getContext "2d"
+
+    # define a custom fillCircle method
+    ctx.fillCircle = (x, y, radius, fillColor) ->
+        this.fillStyle = fillColor
+        this.beginPath()
+        this.moveTo x, y
+        this.arc x, y, radius, 0, Math.PI * 2, false
+        this.fill()
+
+    clearCanvas canvas
+
+    # bind mouse events
+    canvas.onmousemove = (e) ->
+        if not canvas.isDrawing
+           return
+        
+        x = e.pageX - $(document).scrollLeft()
+        y = e.pageY - $(document).scrollTop()
+        radius = 5
+        color = "#cc0000"
+        ctx.fillCircle x, y, radius, color
+        if _lastPoint isnt null
+            dx = x - _lastPoint[0]
+            dy = y - _lastPoint[1]
+            dist = Math.sqrt(dx * dx + dy * dy)
+            rad = Math.atan2 dy, dx
+            sx = Math.cos(rad) * POINT_INTERVAL
+            sy = Math.sin(rad) * POINT_INTERVAL
+            for i in [1..dist/POINT_INTERVAL]
+                ctx.fillCircle(_lastPoint[0] + (sx * i), _lastPoint[1] + (sy * i), radius, color)
+
+        _lastPoint = [x, y]
+
+    canvas.onmousedown = (e) ->
+        canvas.isDrawing = true
+
+    canvas.onmouseup = (e) ->
+        canvas.isDrawing = false
+        _lastPoint = null
+        exportAndResetCanvas()
+
 
 # =======================================================
 # REMOTE METHODS
@@ -224,6 +301,19 @@ createNewUser = (token, callback) ->
     # DO STUFF HERE
     # callback {"id": 1}
     callback 1
+
+exportAndResetCanvas = ->
+    img = $('#js-gifics-canvas')[0].toDataURL "image/png"
+    _doodles.push {
+        "src": img,
+        "top": $(window).scrollTop()
+    }
+    $('body').append "<img src='#{img}' class='gifics-doodle' style='top:#{$(window).scrollTop()}px' />"
+    clearCanvas $('#js-gifics-canvas')[0]
+
+clearCanvas = (canvas) ->
+    ctx = canvas.getContext "2d"
+    ctx.clearRect 0, 0, canvas.width, canvas.height
 
 # =======================================================
 # LOCAL STORAGE
