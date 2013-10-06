@@ -3,7 +3,7 @@
     "version": "1.0",
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "description": "A command line for the web.",
+    "description": "You're one-stop shop for web commentary.",
     "icons": {
         "16": "img/icon.png",
         "48": "img/icon.png",

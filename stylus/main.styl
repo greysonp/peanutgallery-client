@@ -104,7 +104,6 @@ textColor = #89867e
 
     .gifics-back
         border-right 2px textColor
-
         &:hover
             opacity .75
 
@@ -112,6 +111,24 @@ textColor = #89867e
         position fixed
         bottom 0
         width 100%
+
+    select 
+        width 100%
+        background transparent
+        font-size 18px
+        line-height 1
+        border 2px solid textColor
+        border-radius 0
+        -webkit-appearance none
+        padding panelPadding
+        background-color textColor
+        color bkgColor
+        outline none
+        &:hover
+            background-color bkgColor
+            color textColor
+        $:focus
+            outline none
 
 .gifics-canvas
     width 100%

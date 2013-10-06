@@ -7,7 +7,8 @@ STATE = {
     "GROUP": 1,
     "INTERACT": 2,
     "LOG_IN": 3,
-    "DRAWING": 4
+    "DRAWING": 4,
+    "NEW": 5
 }
 _state = STATE.MAIN_MENU
 _groups = {}
@@ -16,7 +17,7 @@ _pages = {}
 _comments = {}
 _user = {}
 _loadingHtml = """
-        <h1>HieroGIFics</h1>
+        <h1>PeanutGallery</h1>
         <h2>Loading...</h2>
     """
 _doodles = []
@@ -94,6 +95,8 @@ fillMenuScreen = (userId) ->
     $('.gifics-groups li').each (index) ->
         $(this).click ->
             fillGroupScreen _groups.groups[index]
+    $('#js-gifics-share').click ->
+        fillShareScreen()
 
 fillGroupScreen = (group) ->
     _state = STATE.GROUP
@@ -250,6 +253,17 @@ enterDrawMode = ->
         _lastPoint = null
         exportAndResetCanvas()
 
+fillShareScreen = () ->
+    _state = STATE.INTERACT
+    getPanel().html _loadingHtml
+
+    await $.get chrome.extension.getURL("html/share.html"), defer data
+    templatePanel data, _groups
+
+    $('.gifics-back').click ->
+        fillMenuScreen _user.id
+
+
 
 # =======================================================
 # REMOTE METHODS
@@ -280,10 +294,10 @@ getComments = (pageId, callback) ->
     callback json
 
 getPageDetails = (userId, url, callback) ->
-    await $.get "#{ROOT_URL}getPageDetails=#{userId}&url=#{url}", defer data
+    await $.get "#{ROOT_URL}userId=#{userId}&url=#{url}", defer data
     console.log "Comment json: #{data}"
-    # json = JSON.parse data 
-    callback { "pageId": null }
+    json = JSON.parse data 
+    callback json
 
 submitComment = (userId, groupId, pageId, date, body) ->
     console.log "Submitted Comment!"
