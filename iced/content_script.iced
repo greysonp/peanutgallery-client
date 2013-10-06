@@ -20,12 +20,11 @@ _loadingHtml = """
         <h1>PeanutGallery</h1>
         <h2>Loading...</h2>
     """
-_doodles = []
 
 _lastPoint = null
 POINT_INTERVAL = 2
 
-ROOT_URL = "http://whispering-sierra-9270.herokuapp.com/?"
+ROOT_URL = "http://whispering-sierra-9270.herokuapp.com/"
 
 
 # =======================================================
@@ -133,7 +132,7 @@ fillInteractScreen = (page) ->
     getPanel().html _loadingHtml
 
     # Should get data from server
-    await getComments page.id, defer comments
+    await getComments (page.id or page.pageId), defer comments
     _comments = comments
 
     # Format dates
@@ -150,12 +149,14 @@ fillInteractScreen = (page) ->
         if $('#js-gifics-canvas').length > 0
             exitDrawMode()
         else
-            enterDrawMode()
+            enterDrawMode page.id
 
     # Add event for submitting comment
     $('.gifics-textarea').keydown (e) ->
         if e.keyCode is 13
-            submitComment _user.id, _group.id, page.id, new Date(), $('.gifics-textarea').val()
+            date = new Date()
+            submitComment _user.id, _group.id, formatDate(date.toString()), $('.gifics-textarea').val()
+            $('.gifics-textarea').blur()
 
     # Back Button
     $('.gifics-back').click ->
@@ -163,7 +164,6 @@ fillInteractScreen = (page) ->
 
     # Size the thread so it doesn't go below comment box
     tHeight = $('.gifics-textarea').height()
-    $('.gifics-comments').css({"margin-bottom": "#{tHeight}px"})
 
 exitDrawMode = ->
     _state = STATE.INTERACT
@@ -171,7 +171,7 @@ exitDrawMode = ->
     $('#js-gifics-canvas').remove()
     getPanel().animate {"left": 0}, 250
 
-enterDrawMode = ->
+enterDrawMode = (pageId) ->
     _state = STATE.DRAWING
 
     $('#js-gifics-draw').html """<i class="icon-ban-circle"></i> Stop"""
@@ -229,7 +229,7 @@ enterDrawMode = ->
     canvas.onmouseup = (e) ->
         canvas.isDrawing = false
         _lastPoint = null
-        exportAndResetCanvas()
+        exportAndResetCanvas pageId
 
 fillShareScreen = () ->
     _state = STATE.INTERACT
@@ -261,48 +261,56 @@ createNewUser = (token, callback) ->
     callback json.id
 
 getGroups = (userId, callback) ->
-    await $.get "#{ROOT_URL}getGroups=#{userId}", defer data
+    await $.get "#{ROOT_URL}?getGroups=#{userId}", defer data
     console.log "Group json: #{data}"
     json = JSON.parse data 
     callback json
 
 getPages = (groupId, callback) ->
-    await $.get "#{ROOT_URL}getPages=#{groupId}", defer data
+    await $.get "#{ROOT_URL}?getPages=#{groupId}", defer data
     console.log "Page json: #{data}"
     json = JSON.parse data 
     callback json
 
 getComments = (pageId, callback) ->
-    await $.get "#{ROOT_URL}getComments=#{pageId}", defer data
+    await $.get "#{ROOT_URL}?getComments=#{pageId}", defer data
+    console.log "#{ROOT_URL}?getComments=#{pageId}"
     console.log "Comment json: #{data}"
     json = JSON.parse data 
     callback json
 
 getPageDetails = (userId, url, callback) ->
-    await $.get "#{ROOT_URL}userId=#{userId}&url=#{url}", defer data
+    await $.get "#{ROOT_URL}?userId=#{userId}&url=#{url}", defer data
     console.log "Comment json: #{data}"
     json = JSON.parse data 
     callback json
 
-submitComment = (userId, groupId, pageId, date, body) ->
+submitComment = (userId, groupId, date, body) ->
     console.log "Submitted Comment!"
-    await $.get "#{ROOT_URL}submitComment=#{body}&userId=#{userId}&groupId=#{groupId}&pageId=#{pageId}&date=#{date}", defer data
-    console.log "Comment json: #{data}"
+    $.get "#{ROOT_URL}?body=#{body}&userId=#{userId}&groupId=#{groupId}&date=#{date}&url=#{window.location.href}"
+    console.log "#{ROOT_URL}?body=#{body}&userId=#{userId}&groupId=#{groupId}&date=#{date}&url=#{window.location.href}"
 
 createPage = (userId, groupId, url, title, callback) ->
-    await $.get "#{ROOT_URL}userId=#{userId}&groupId=#{groupId}&url=#{url}&title=#{title}", defer data
+    await $.get "#{ROOT_URL}?userId=#{userId}&groupId=#{groupId}&url=#{url}&title=#{title}", defer data
     console.log "Comment json: #{data}"
     json = JSON.parse data 
     callback json
 
-exportAndResetCanvas = ->
+exportAndResetCanvas = (pageId) ->
     img = $('#js-gifics-canvas')[0].toDataURL "image/png"
-    _doodles.push {
-        "src": img,
-        "top": $(window).scrollTop()
-    }
+    saveImage pageId, img, $(window).scrollTop()
     $('body').append "<img src='#{img}' class='gifics-doodle' style='top:#{$(window).scrollTop()}px' />"
     clearCanvas $('#js-gifics-canvas')[0]
+
+saveImage = (pageId, img, offsetTop) ->
+    console.log "Making request."
+    $.post "http://whispersinthebreeze.com/images.php", {
+            "pageId": pageId, 
+            "imageData": img,
+            "offsetTop": offsetTop 
+        }, (data) ->
+            console.log data
+
 
 
 # =======================================================

@@ -1,14 +1,16 @@
-<h1><i class="icon-chevron-left gifics-back"></i> {{groupName}}</h1>
-<ul class="gifics-pages">
-    {{#each pages}}
-        <li>
-            <h2>{{title}}</h2>
-            <h3>By {{author.firstName}} {{author.lastName}} on {{date}}</h3>
-            <!-- <p class="gifics-comments">{{numComments}} comments.</p>
-            <p class="gifics-body">{{lastComment.body}}</p>
-            <h3 class="gifics-date">By {{lastComment.author.firstName}} {{lastComment.author.lastName}} at {{lastComment.date}}</h3> -->
-        </li>
-    {{else}}
-        <h2 class="gifics-sorry">Sorry, there don't seem to be any pages shared within this group. Go share some!</h2>
-    {{/each}}
-</ul>
+<div class="gifics-scroll">
+    <h1><i class="icon-chevron-left gifics-back"></i> {{groupName}}</h1>
+    <ul class="gifics-pages">
+        {{#each pages}}
+            <li>
+                <h2>{{title}}</h2>
+                <h3>By {{author.firstName}} {{author.lastName}} on {{date}}</h3>
+                <!-- <p class="gifics-comments">{{numComments}} comments.</p>
+                <p class="gifics-body">{{lastComment.body}}</p>
+                <h3 class="gifics-date">By {{lastComment.author.firstName}} {{lastComment.author.lastName}} at {{lastComment.date}}</h3> -->
+            </li>
+        {{else}}
+            <h2 class="gifics-sorry">Sorry, there don't seem to be any pages shared within this group. Go share some!</h2>
+        {{/each}}
+    </ul>
+</div>
