@@ -24,7 +24,6 @@ _loadingHtml = """
 
 # Listens for button click
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
-    console.log request
     if request.action is "toggle_panel"
         if isPanelOpen()
             closePanel()
@@ -43,6 +42,7 @@ openPanel = () ->
         await getUserData defer data
         if data.loggedIn
             _user = data
+            # getPageInfo data.userId, window.location.href
             fillMenuScreen data.userId
         else
             fillLoginScreen()

@@ -1,13 +1,14 @@
 <h1>{{pageTitle}}</h1>
 <h2>Mark-Up</h2>
 <div class="tools">
+    <a class="gifics-btn"><i class="icon-pencil"></i> Draw</a>
 </div>
 <h2>Comments</h2>
 <ul class="gifics-comments">
     {{#each comments}}
         <li>
-            <p class="body">{{body}}</p>
-            <h3 class="date">By {{author.firstName}} {{author.lastName}} at {{date}}</h3>
+            <p class="gifics-body">{{body}}</p>
+            <h3 class="gifics-date">By {{author.firstName}} {{author.lastName}} at {{date}}</h3>
         </li>
     {{/each}}
 </ul>

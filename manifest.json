@@ -16,7 +16,7 @@
         {
             "exclude_globs": [  ],
             "include_globs": [ "*" ],
-            "css": ["css/main.css"],
+            "css": ["css/main.css", "css/libs/font-awesome.min.css"],
             "js": [ "js/libs/jquery-1.9.1.min.js",
                     "js/libs/handlebars.js",
                     "js/content_script.js"],
