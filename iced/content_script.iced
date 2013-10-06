@@ -72,6 +72,10 @@ addPanelEvents = ->
     getPanel().mouseleave ->
         if _state is STATE.DRAWING
             getPanel().animate {"left":"-285px"}, 250
+    $('.gifics-textarea').css {"top": getPanel().scrollTop() - $('.gifics-textarea').height() + getPanel().height() - 10 + "px"}
+    getPanel().scroll ->
+        $('.gifics-textarea').css {"top": getPanel().scrollTop() - $('.gifics-textarea').height() + getPanel().height() - 10 + "px"}
+
 
 # =======================================================
 # SCREEN DRAWING
@@ -164,6 +168,8 @@ fillInteractScreen = (page) ->
 
     # Size the thread so it doesn't go below comment box
     tHeight = $('.gifics-textarea').height()
+
+    $('.gifics-textarea').css {"top": getPanel().scrollTop() - $('.gifics-textarea').height() + getPanel().height() - 10 + "px"}
 
 exitDrawMode = ->
     _state = STATE.INTERACT
@@ -287,8 +293,9 @@ getPageDetails = (userId, url, callback) ->
 
 submitComment = (userId, groupId, date, body) ->
     console.log "Submitted Comment!"
-    $.get "#{ROOT_URL}?body=#{body}&userId=#{userId}&groupId=#{groupId}&date=#{date}&url=#{window.location.href}"
+    await $.get "#{ROOT_URL}?body=#{body}&userId=#{userId}&groupId=#{groupId}&date=#{date}&url=#{window.location.href}" , defer data
     console.log "#{ROOT_URL}?body=#{body}&userId=#{userId}&groupId=#{groupId}&date=#{date}&url=#{window.location.href}"
+    window.location.reload true
 
 createPage = (userId, groupId, url, title, callback) ->
     await $.get "#{ROOT_URL}?userId=#{userId}&groupId=#{groupId}&url=#{url}&title=#{title}", defer data

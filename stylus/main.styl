@@ -20,12 +20,9 @@ textColor = #89867e
     z-index 200000000
     box-shadow 0 0 10px 0 #000
     font-family 'Raleway-Regular', sans-serif
+    overflow-y auto
     text-align left
     letter-spacing 0
-
-    .gifics-scroll
-        height 100%
-        overflow-y scroll
 
 
     h1, h2, h3
@@ -85,6 +82,9 @@ textColor = #89867e
         .gifics-body, .gifics-date
             padding-left panelPadding
 
+    .gifics-comments
+        overflow-y auto
+
     .gifics-btn
         display inline-block
         background-color textColor
@@ -109,7 +109,6 @@ textColor = #89867e
 
     .gifics-textarea
         position absolute
-        bottom 0
         width 100%
         border none
         border-top 4px solid textColor

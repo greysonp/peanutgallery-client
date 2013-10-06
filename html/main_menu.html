@@ -1,15 +1,13 @@
-<div class="gifics-scroll">
-    <h1>PeanutGallery</h1>
-    <a class="gifics-btn" id="js-gifics-share">Mark-Up &amp; Share</a>
-    <h2>Groups</h2>
-    <ul class="gifics-groups">
-        {{#each groups}}
-            <li>
-                <h2>{{name}}</h2>
-                <p>{{newShares}} new shares.</p>
-            </li>
-        {{else}}
-            <h2 class="gifics-sorry">Sorry, you don't seem to belong to any groups. Go join one on Facebook!</h2>
-        {{/each}}
-    </ul>
-</div>
+<h1>PeanutGallery</h1>
+<a class="gifics-btn" id="js-gifics-share">Mark-Up &amp; Share</a>
+<h2>Groups</h2>
+<ul class="gifics-groups">
+    {{#each groups}}
+        <li>
+            <h2>{{name}}</h2>
+            <p>{{newShares}} new shares.</p>
+        </li>
+    {{else}}
+        <h2 class="gifics-sorry">Sorry, you don't seem to belong to any groups. Go join one on Facebook!</h2>
+    {{/each}}
+</ul>
