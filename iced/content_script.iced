@@ -23,6 +23,8 @@ _doodles = []
 _lastPoint = null
 POINT_INTERVAL = 2
 
+ROOT_URL = "http://whispering-sierra-9270.herokuapp.com/?"
+
 # =======================================================
 # BACKGROUND INTERACTION
 # =======================================================
@@ -47,8 +49,8 @@ openPanel = () ->
         await getUserData defer data
         if data.loggedIn
             _user = data
-            # getPageInfo data.userId, window.location.href
-            fillMenuScreen data.userId
+            console.log "From storage: #{data.id}"
+            fillMenuScreen data.id
         else
             fillLoginScreen()
 
@@ -78,28 +80,17 @@ fillLoginScreen = ->
     getPanel().html data
     $('#js-login').click ->
         chrome.runtime.sendMessage {"action": "facebook_auth"}, (response) ->
-            console.log "Got token:" + response.token
+            console.log "Got token: #{response.token}"
             createNewUser response.token, (id)->
                 setUserData true, response.token, id
+                console.log "Got id: #{id}"
                 fillMenuScreen id
 
 fillMenuScreen = (userId) ->
     _state = STATE.MAIN_MENU
     await $.get chrome.extension.getURL("html/main_menu.html"), defer data
-    _groups = {
-        "groups": [
-            {
-                "id": 1
-                "name": "Spidey-Friends",
-                "newShares": 2
-            },
-            {   
-                "id": 2
-                "name": "Sinister Six",
-                "newShares": 6
-            }
-        ]
-    }
+    await getGroups userId, defer groups
+    _groups = groups
     templatePanel data, _groups
     $('.gifics-groups li').each (index) ->
         $(this).click ->
@@ -109,52 +100,9 @@ fillGroupScreen = (group) ->
     _state = STATE.GROUP
     getPanel().html _loadingHtml
 
-    _pages = {
-        "pages": [
-            {
-                "id": 1,
-                "title": "Spider-Man Wiki",
-                "url": "http://en.wikipedia.org/wiki/Spider-man",
-                "date": new Date(),
-                "numComments": 3,
-                "lastComment": {
-                    "body": "I don't like this.",
-                    "date": new Date(),
-                    "author": {
-                        "id": 2,
-                        "firstName": "Michael",
-                        "lastName": "Toth"
-                    }
-                },
-                "author": {
-                    "id": 1,
-                    "firstName": "Greyson",
-                    "lastName": "Parrelli"
-                }
-            },
-            {
-                "id": 2,
-                "title": "Venom Wiki",
-                "url": "http://en.wikipedia.org/wiki/Venom",
-                "date": new Date(),
-                "numComments": 2,
-                "lastComment": {
-                    "body": "You're dumb.",
-                    "date": new Date(),
-                    "author": {
-                        "id": 1,
-                        "firstName": "Greyson",
-                        "lastName": "Parrelli"
-                    }
-                },
-                "author": {
-                    "id": 2,
-                    "firstName": "Michael",
-                    "lastName": "Toth"
-                }
-            }
-        ]   
-    }
+    await getPages group.id, defer pages
+    _pages = pages
+
     # Format dates
     for p in _pages.pages
         p.date = formatDate p.date
@@ -304,9 +252,28 @@ enterDrawMode = ->
 # =======================================================
 
 createNewUser = (token, callback) ->
-    # DO STUFF HERE
-    # callback {"id": 1}
-    callback 1
+    await $.get "#{ROOT_URL}accessToken=#{token}", defer data
+    console.log "Create new json: #{data}"
+    json = JSON.parse data 
+    callback json.id
+
+getGroups = (userId, callback) ->
+    await $.get "#{ROOT_URL}getGroups=#{userId}", defer data
+    console.log "Group json: #{data}"
+    json = JSON.parse data 
+    callback json
+
+getPages = (groupId, callback) ->
+    await $.get "#{ROOT_URL}getPages=#{groupId}", defer data
+    console.log "Page json: #{data}"
+    json = JSON.parse data 
+    callback json
+
+getComments = (pageId, callback) ->
+    await $.get "#{ROOT_URL}getComments=#{pageId}", defer data
+    console.log "Comment json: #{data}"
+    json = JSON.parse data 
+    callback json
 
 exportAndResetCanvas = ->
     img = $('#js-gifics-canvas')[0].toDataURL "image/png"
@@ -317,9 +284,6 @@ exportAndResetCanvas = ->
     $('body').append "<img src='#{img}' class='gifics-doodle' style='top:#{$(window).scrollTop()}px' />"
     clearCanvas $('#js-gifics-canvas')[0]
 
-clearCanvas = (canvas) ->
-    ctx = canvas.getContext "2d"
-    ctx.clearRect 0, 0, canvas.width, canvas.height
 
 # =======================================================
 # LOCAL STORAGE
@@ -336,6 +300,7 @@ setUserData = (isLoggedIn, token, userId) ->
 
 getUserData = (callback) ->
     await chrome.storage.local.get "user", defer data
+    console.log data
     if Object.keys(data).length <= 0
         callback {"loggedIn": false}
     else
@@ -362,6 +327,10 @@ destroyPanelHtml = () ->
 # Retrievs jQuery object of panel
 getPanel = () ->
     return $('#js-gifics-panel')
+
+clearCanvas = (canvas) ->
+    ctx = canvas.getContext "2d"
+    ctx.clearRect 0, 0, canvas.width, canvas.height
 
 embedFonts = () ->
     # Normal

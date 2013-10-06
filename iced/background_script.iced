@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
     if request.action is "facebook_auth"
         chrome.tabs.query {"active":true, "currentWindow":true}, (tabs) ->
             chrome.tabs.create {
-                "url": "https://www.facebook.com/dialog/oauth?client_id=394922043969304&redirect_uri=http://whispering-sierra-9270.herokuapp.com/grey.php"
+                "url": "https://www.facebook.com/dialog/oauth?client_id=394922043969304&redirect_uri=http://whispering-sierra-9270.herokuapp.com/grey.php&scope=user_groups,friends_groups"
             }, null
         
             currTab = tabs[0]
