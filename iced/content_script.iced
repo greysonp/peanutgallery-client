@@ -255,7 +255,7 @@ fillShareScreen = () ->
 # =======================================================
 
 createNewUser = (token, callback) ->
-    await $.get "#{ROOT_URL}accessToken=#{token}", defer data
+    await $.get "#{ROOT_URL}?accessToken=#{token}", defer data
     console.log "Create new json: #{data}"
     json = JSON.parse data 
     callback json.id
