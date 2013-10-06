@@ -230,6 +230,7 @@ fillInteractScreen = (page) ->
 exitDrawMode = ->
     _state = STATE.INTERACT
     $('#js-gifics-draw').html """<i class="icon-pencil"></i> Draw"""
+    $('#js-gifics-canvas').remove()
     getPanel().animate {"left": 0}, 250
 
 enterDrawMode = ->
