@@ -12,7 +12,7 @@ _state = STATE.MAIN_MENU
 _groups = {}
 _pages = {}
 _comments = {}
-
+_user = {}
 _loadingHtml = """
         <h1>HieroGIFics</h1>
         <h2>Loading...</h2>
@@ -40,9 +40,10 @@ openPanel = () ->
     if $('#js-gifics-panel').length <= 0
         constructBaseHtml()
     getPanel().animate {"left": "0"}, 250, ()->
-        await getLoggedIn defer isLoggedIn
-        if isLoggedIn
-            fillMenuScreen()
+        await getUserData defer data
+        if data.loggedIn
+            _user = data
+            fillMenuScreen data.userId
         else
             fillLoginScreen()
 
@@ -65,9 +66,12 @@ fillLoginScreen = ->
     getPanel().html data
     $('#js-login').click ->
         chrome.runtime.sendMessage {"action": "facebook_auth"}, (response) ->
-            console.log response.token
+            console.log "Got token:" + response.token
+            createNewUser response.token, (id)->
+                setUserData true, response.token, id
+                fillMenuScreen id
 
-fillMenuScreen = ->
+fillMenuScreen = (userId) ->
     _state = STATE.MAIN_MENU
     await $.get chrome.extension.getURL("html/main_menu.html"), defer data
     _groups = {
@@ -203,27 +207,34 @@ fillInteractScreen = (page) ->
     await $.get chrome.extension.getURL("html/interact.html"), defer data
     templatePanel data, _comments
 
+# =======================================================
+# REMOTE METHODS
+# =======================================================
 
-
+createNewUser = (token, callback) ->
+    # DO STUFF HERE
+    # callback {"id": 1}
+    callback 1
 
 # =======================================================
 # LOCAL STORAGE
 # =======================================================
 
-setLoggedIn = (isLoggedIn, token = undefined) ->
-    chrome.storage.local.put {
+setUserData = (isLoggedIn, token, userId) ->
+    chrome.storage.local.set {
         "user": {
+            "id": userId,
             "loggedIn": isLoggedIn,
             "token": token
         }
     }
 
-getLoggedIn = (callback) ->
+getUserData = (callback) ->
     await chrome.storage.local.get "user", defer data
     if Object.keys(data).length <= 0
-        callback false
+        callback {"loggedIn": false}
     else
-        callback data.user.loggedIn
+        callback data.user
 
 # =======================================================
 # MISCELLANEOUS
