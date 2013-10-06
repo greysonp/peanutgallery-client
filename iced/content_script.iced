@@ -54,21 +54,25 @@ openPanel = () ->
         else
             fillLoginScreen()
 
-        getPanel().mouseenter ->
-            if _state is STATE.DRAWING
-                getPanel().animate {"left":0}, 250
-        getPanel().mouseleave ->
-            if _state is STATE.DRAWING
-                getPanel().animate {"left":"-285px"}, 250
+        addPanelEvents()
 
 # Closes the panel, then destroys the html fo the panel
-closePanel = () ->
+closePanel = ->
     getPanel().animate {"left": "-300px"}, 250, () ->
         destroyPanelHtml()
 
-constructBaseHtml = () ->
+constructBaseHtml = ->
     $('body').prepend "<div id='js-gifics-panel' class='gifics-panel'></div>"
     getPanel().html _loadingHtml
+
+
+addPanelEvents = ->
+    getPanel().mouseenter ->
+        if _state is STATE.DRAWING
+            getPanel().animate {"left":0}, 250
+    getPanel().mouseleave ->
+        if _state is STATE.DRAWING
+            getPanel().animate {"left":"-285px"}, 250
 
 # =======================================================
 # SCREEN DRAWING
@@ -108,7 +112,7 @@ fillGroupScreen = (group) ->
     # Format dates
     for p in _pages.pages
         p.date = formatDate p.date
-        p.lastComment.date = formatDate p.lastComment.date
+        # p.lastComment.date = formatDate p.lastComment.date
 
     _pages["groupName"] = group.name
     await $.get chrome.extension.getURL("html/groups.html"), defer data 
@@ -187,6 +191,10 @@ fillInteractScreen = (page) ->
         if e.keyCode is 13
             submitComment _user.id, _group.id, page.id, new Date(), $('.gifics-textarea').val()
 
+    # Back Button
+    $('.gifics-back').click ->
+        fillMenuScreen _user.id
+
 exitDrawMode = ->
     _state = STATE.INTERACT
     $('#js-gifics-draw').html """<i class="icon-pencil"></i> Draw"""
@@ -263,6 +271,13 @@ fillShareScreen = () ->
     $('.gifics-back').click ->
         fillMenuScreen _user.id
 
+    $('#js-gifics-go').click ->
+        index = $('#js-gifics-panel select')[0].selectedIndex
+        await createPage _user.id, _groups.groups[index].id, window.location.href, $('title').text(), defer lame
+        await getPageDetails _user.id, window.location.href, defer details
+        fillInteractScreen details
+
+
 
 
 # =======================================================
@@ -303,6 +318,12 @@ submitComment = (userId, groupId, pageId, date, body) ->
     console.log "Submitted Comment!"
     await $.get "#{ROOT_URL}submitComment=#{body}&userId=#{userId}&groupId=#{groupId}&pageId=#{pageId}&date=#{date}", defer data
     console.log "Comment json: #{data}"
+
+createPage = (userId, groupId, url, title, callback) ->
+    await $.get "#{ROOT_URL}userId=#{userId}&groupId=#{groupId}&url=#{url}&title=#{title}", defer data
+    console.log "Comment json: #{data}"
+    json = JSON.parse data 
+    callback json
 
 exportAndResetCanvas = ->
     img = $('#js-gifics-canvas')[0].toDataURL "image/png"
@@ -418,4 +439,7 @@ if data.loggedIn
         console.log details
         if details.pageId isnt null
             _group = { "id": details.groupId }
+            constructBaseHtml()
+            addPanelEvents()
+            getPanel().animate {"left": "0"}, 250
             fillInteractScreen details
