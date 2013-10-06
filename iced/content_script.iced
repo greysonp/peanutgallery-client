@@ -207,6 +207,15 @@ fillInteractScreen = (page) ->
     await $.get chrome.extension.getURL("html/interact.html"), defer data
     templatePanel data, _comments
 
+    #Add event for draw button
+    $('#js-gifics-draw').click ->
+        enterDrawMode()
+
+enterDrawMode = ->
+    $('body').prepend """
+        <canvas id="js-gifics-canvas" class="gifics-canvas"></canvas>
+    """
+
 # =======================================================
 # REMOTE METHODS
 # =======================================================
