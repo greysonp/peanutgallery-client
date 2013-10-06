@@ -10,6 +10,8 @@
             <p class="gifics-body">{{body}}</p>
             <h3 class="gifics-date">By {{author.firstName}} {{author.lastName}} at {{date}}</h3>
         </li>
+    {{else}}
+        <h2 class="gifics-sorry">No Comments (Yet!)</h2>
     {{/each}}
 </ul>
-<textarea class="gifics-textarea" rows="3"></textarea>
+<textarea class="gifics-textarea" rows="5"></textarea>

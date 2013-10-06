@@ -133,43 +133,9 @@ fillInteractScreen = (page) ->
     getPanel().html _loadingHtml
 
     # Should get data from server
-    _comments = {
-        "comments": [
-            {
-                "id": 1,
-                "author": {
-                    "id": 1
-                    "firstName": "Greyson",
-                    "lastName": "Parrelli",
-                },
-                "date": new Date(),
-                "body": "This site so cool.",
-                "likes": 2
-            },
-            {
-                "id": 2,
-                "author": {
-                    "id": 2
-                    "firstName": "Michael",
-                    "lastName": "Toth",
-                },
-                "date": new Date(),
-                "body": "No it isn't.",
-                "likes": 1
-            },
-            {
-                "id": 3,
-                "author": {
-                    "id": 1
-                    "firstName": "Greyson",
-                    "lastName": "Parrelli",
-                },
-                "date": new Date(),
-                "body": "Yes it is.",
-                "likes": 3
-            }
-        ]
-    }
+    await getComments page.id, defer comments
+    _comments = comments
+
     # Format dates
     for c in _comments.comments
         c.date = formatDate c.date
@@ -194,6 +160,10 @@ fillInteractScreen = (page) ->
     # Back Button
     $('.gifics-back').click ->
         fillMenuScreen _user.id
+
+    # Size the thread so it doesn't go below comment box
+    tHeight = $('.gifics-textarea').height()
+    $('.gifics-comments').css({"margin-bottom": "#{tHeight}px"})
 
 exitDrawMode = ->
     _state = STATE.INTERACT
