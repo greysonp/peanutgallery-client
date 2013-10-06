@@ -6,17 +6,17 @@ btnHighlighColor = #a6c8f6
 shadeDefault = #fff
 shadeHighlight = #f6f6f6
 
-// Yellow
-yellowBkgColor = #fe7
-yellowTextColor = #663
+// Colors
+bkgColor = #eee
+textColor = #89867e
 
 .gifics-panel
     position fixed
     left -1 * panelWidth
     height 100%
     width 300px
-    background-color yellowBkgColor
-    color yellowTextColor
+    background-color bkgColor
+    color textColor
     z-index 200000000
     box-shadow 0 0 10px 0 #000
     font-family 'Raleway-Regular', sans-serif
@@ -26,7 +26,7 @@ yellowTextColor = #663
 
     h1, h2, h3
         font-family 'Raleway-Bold', sans-serif
-        color yellowTextColor
+        color textColor
         border none
 
     &>h1, &>h2, &>p
@@ -34,17 +34,17 @@ yellowTextColor = #663
         margin 0
 
     &>h1
-        font-size 30px
+        font-size 28px
 
     &>h2
-        font-size 28px
+        font-size 24px
 
     li
         display block
         margin 0 
         padding panelPadding
-        background-color yellowBkgColor
-        border-bottom 2px solid yellowTextColor
+        background-color bkgColor
+        border-bottom 2px solid textColor
 
         p
             margin 0
@@ -52,8 +52,8 @@ yellowTextColor = #663
 
     .gifics-groups, .gifics-pages
         li:hover, li:hover h1, li:hover h2, li:hover h3
-            background-color yellowTextColor
-            color yellowBkgColor
+            background-color textColor
+            color bkgColor
 
     ul
         width 100%
@@ -83,26 +83,31 @@ yellowTextColor = #663
 
     .gifics-btn
         display inline-block
-        background-color yellowTextColor
-        color yellowBkgColor
+        background-color textColor
+        color bkgColor
         text-decoration none
         font-size 20px
         font-weight bold
         text-align center
         margin panelPadding 0 panelPadding panelPadding
         padding panelPadding
-        border 2px solid yellowTextColor
+        border 2px solid textColor
 
         &:hover
             text-decoration none
-            background-color yellowBkgColor
-            color yellowTextColor
+            background-color bkgColor
+            color textColor
 
     .gifics-back
-        border-right 2px yellowTextColor
+        border-right 2px textColor
 
         &:hover
             opacity .75
+
+    .gifics-textarea
+        position fixed
+        bottom 0
+        width 100%
 
 .gifics-canvas
     width 100%

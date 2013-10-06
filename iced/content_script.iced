@@ -11,6 +11,7 @@ STATE = {
 }
 _state = STATE.MAIN_MENU
 _groups = {}
+_group = {}
 _pages = {}
 _comments = {}
 _user = {}
@@ -170,13 +171,18 @@ fillInteractScreen = (page) ->
     await $.get chrome.extension.getURL("html/interact.html"), defer data
     templatePanel data, _comments
 
-    #Add event for draw button
+    # Add event for draw button
     $('#js-gifics-draw').click ->
         # Don't add a canvas if one exists
         if $('#js-gifics-canvas').length > 0
             exitDrawMode()
         else
             enterDrawMode()
+
+    # Add event for submitting comment
+    $('.gifics-textarea').keydown (e) ->
+        if e.keyCode is 13
+            submitComment _user.id, _group.id, page.id, new Date(), $('.gifics-textarea').val()
 
 exitDrawMode = ->
     _state = STATE.INTERACT
@@ -279,6 +285,10 @@ getPageDetails = (userId, url, callback) ->
     # json = JSON.parse data 
     callback { "pageId": null }
 
+submitComment = (userId, groupId, pageId, date, body) ->
+    console.log "Submitted Comment!"
+    await $.get "#{ROOT_URL}submitComment=#{body}&userId=#{userId}&groupId=#{groupId}&pageId=#{pageId}&date=#{date}", defer data
+    console.log "Comment json: #{data}"
 
 exportAndResetCanvas = ->
     img = $('#js-gifics-canvas')[0].toDataURL "image/png"
@@ -393,4 +403,5 @@ if data.loggedIn
     getPageDetails _user.id, window.location.href, (details) ->
         console.log details
         if details.pageId isnt null
+            _group = { "id": details.groupId }
             fillInteractScreen details
