@@ -36,6 +36,7 @@
     ],
 
     "web_accessible_resources": [
+        "js/*.map",
         "css/*",
         "css/fonts/*",
         "html/*.html"

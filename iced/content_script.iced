@@ -25,6 +25,7 @@ POINT_INTERVAL = 2
 
 ROOT_URL = "http://whispering-sierra-9270.herokuapp.com/?"
 
+
 # =======================================================
 # BACKGROUND INTERACTION
 # =======================================================
@@ -46,10 +47,7 @@ openPanel = () ->
     if $('#js-gifics-panel').length <= 0
         constructBaseHtml()
     getPanel().animate {"left": "0"}, 250, ()->
-        await getUserData defer data
-        if data.loggedIn
-            _user = data
-            console.log "From storage: #{data.id}"
+        if _user.loggedIn
             fillMenuScreen data.id
         else
             fillLoginScreen()
@@ -275,6 +273,13 @@ getComments = (pageId, callback) ->
     json = JSON.parse data 
     callback json
 
+getPageDetails = (userId, url, callback) ->
+    await $.get "#{ROOT_URL}getPageDetails=#{userId}&url=#{url}", defer data
+    console.log "Comment json: #{data}"
+    # json = JSON.parse data 
+    callback { "pageId": null }
+
+
 exportAndResetCanvas = ->
     img = $('#js-gifics-canvas')[0].toDataURL "image/png"
     _doodles.push {
@@ -375,3 +380,17 @@ formatTime = (dateString) ->
         return "#{hours}:#{minutes} AM"
     else
         return "#{hours}:#{minutes} PM"
+
+
+# =======================================================
+# INITIAL PAGE CHECK
+# =======================================================
+
+await getUserData defer data
+if data.loggedIn
+    _user = data
+    console.log "Initial load, storage: #{data.id}"
+    getPageDetails _user.id, window.location.href, (details) ->
+        console.log details
+        if details.pageId isnt null
+            fillInteractScreen details
