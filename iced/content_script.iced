@@ -164,9 +164,14 @@ fillGroupScreen = (group) ->
     await $.get chrome.extension.getURL("html/groups.html"), defer data 
     templatePanel data, _pages
 
+    # Click event
     $('.gifics-pages li').each (index) ->
         $(this).click ->
-            fillInteractScreen _pages.pages[index]
+            window.location.href = _pages.pages[index].url
+
+    # Back button
+    $('.gifics-back').click ->
+        fillMenuScreen _user.id
 
 
 fillInteractScreen = (page) ->

@@ -26,13 +26,15 @@ yellowTextColor = #663
 
     h1, h2, h3
         font-family 'Raleway-Bold', sans-serif
+        color yellowTextColor
+        border none
 
     &>h1, &>h2, &>p
         padding panelPadding
         margin 0
 
     &>h1
-        font-size 36px
+        font-size 30px
 
     &>h2
         font-size 28px
@@ -49,7 +51,7 @@ yellowTextColor = #663
             padding 0 0 0 0
 
     .gifics-groups, .gifics-pages
-        li:hover
+        li:hover, li:hover h1, li:hover h2, li:hover h3
             background-color yellowTextColor
             color yellowBkgColor
 
@@ -95,6 +97,12 @@ yellowTextColor = #663
             text-decoration none
             background-color yellowBkgColor
             color yellowTextColor
+
+    .gifics-back
+        border-right 2px yellowTextColor
+
+        &:hover
+            opacity .75
 
 .gifics-canvas
     width 100%
