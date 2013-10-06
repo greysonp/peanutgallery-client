@@ -20,6 +20,10 @@ yellowTextColor = #663
     z-index 200000000
     box-shadow 0 0 10px 0 #000
     font-family 'Raleway-Regular', sans-serif
+    overflow-y auto
+
+    h1, h2, h3
+        font-family 'Raleway-Regular', sans-serif
 
     &>h1, &>h2
         padding panelPadding
@@ -38,22 +42,24 @@ yellowTextColor = #663
         background-color yellowBkgColor
         border-bottom 2px solid yellowTextColor
 
-        &:hover
-            background-color yellowTextColor
-            color yellowBkgColor
         p
             margin 0
             padding 0 0 0 0
+
+    .gifics-groups, .gifics-pages
+        li:hover
+            background-color yellowTextColor
+            color yellowBkgColor
 
     ul
         width 100%
         margin 0
         padding 0
 
-    .gifics-groups li h2 
+    .gifics-groups h2 
         margin 0
 
-    .gifics-pages 
+    .gifics-pages, .gifics-comments
         h2, h3
             margin 0
         h3
@@ -63,10 +69,14 @@ yellowTextColor = #663
             opacity 0.8
         .body
             margin-top 5px
+        
+    .gifics-pages
         .body, .date
             padding-left panelPadding
 
-            
+    .gifics-comments
+        overflow-y auto
+
     .gifics-btn
         display inline-block
         background-color yellowTextColor

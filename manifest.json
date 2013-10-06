@@ -31,11 +31,13 @@
     },
     "permissions": [
         "tabs",
-        "storage"
+        "storage",
+        "https://facebook.com/connect/*"
     ],
 
     "web_accessible_resources": [
-        "css/main.css",
+        "css/*",
+        "css/fonts/*",
         "html/*.html"
     ]
 }

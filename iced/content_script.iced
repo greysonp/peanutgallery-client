@@ -40,7 +40,11 @@ openPanel = () ->
     if $('#js-gifics-panel').length <= 0
         constructBaseHtml()
     getPanel().animate {"left": "0"}, 250, ()->
-        fillMenuScreen()
+        await getLoggedIn defer isLoggedIn
+        if isLoggedIn
+            fillMenuScreen()
+        else
+            fillLoginScreen()
 
 # Closes the panel, then destroys the html fo the panel
 closePanel = () ->
@@ -55,7 +59,15 @@ constructBaseHtml = () ->
 # SCREEN DRAWING
 # =======================================================
 
-fillMenuScreen = () ->
+fillLoginScreen = ->
+    _state = STATE.LOGIN
+    await $.get chrome.extension.getURL("html/login.html"), defer data
+    getPanel().html data
+    $('#js-login').click ->
+        chrome.runtime.sendMessage {"action": "facebook_auth"}, (response) ->
+            console.log response.token
+
+fillMenuScreen = ->
     _state = STATE.MAIN_MENU
     await $.get chrome.extension.getURL("html/main_menu.html"), defer data
     _groups = {
@@ -136,8 +148,12 @@ fillGroupScreen = (group) ->
     await $.get chrome.extension.getURL("html/groups.html"), defer data 
     templatePanel data, _pages
 
+    $('.gifics-pages li').each (index) ->
+        $(this).click ->
+            fillInteractScreen _pages.pages[index]
 
-fillInteractScreen = (pageId) ->
+
+fillInteractScreen = (page) ->
     _state = STATE.INTERACT
     getPanel().html _loadingHtml
 
@@ -179,8 +195,13 @@ fillInteractScreen = (pageId) ->
             }
         ]
     }
+    # Format dates
+    for c in _comments.comments
+        c.date = formatDate c.date
+    _comments["pageTitle"] = page.title
 
-    await $.get chrome.extension.getURL("html/main_menu.html"), defer data
+    await $.get chrome.extension.getURL("html/interact.html"), defer data
+    templatePanel data, _comments
 
 
 
@@ -196,6 +217,13 @@ setLoggedIn = (isLoggedIn, token = undefined) ->
             "token": token
         }
     }
+
+getLoggedIn = (callback) ->
+    await chrome.storage.local.get "user", defer data
+    if Object.keys(data).length <= 0
+        callback false
+    else
+        callback data.user.loggedIn
 
 # =======================================================
 # MISCELLANEOUS
@@ -220,12 +248,17 @@ getPanel = () ->
     return $('#js-gifics-panel')
 
 embedFonts = () ->
-    # NormalG
-    normalNode = document.createElement ("style");
-    normalNode.type = "text/css"
-    url = chrome.extension.getURL "css/fonts/Raleway-Regular.ttf"
-    normalNode.textContent = "@font-face { font-family: 'Raleway-Regular'; src: url('#{url}'); }"
-    document.head.appendChild normalNode
+    # Normal
+    embedFont "Raleway-Regular", "css/fonts/Raleway-Regular.ttf"
+    embedFont "Raleway-Bold", "css/fonts/Raleway-Bold.ttf"
+    embedFont "FontAwesome", "css/fonts/fontawesome-webfont.ttf"
+
+embedFont = (name, path) ->
+    node = document.createElement ("style");
+    node.type = "text/css"
+    url = chrome.extension.getURL path
+    node.textContent = "@font-face { font-family: '#{name}'; src: url('#{url}'); }"
+    document.head.appendChild node
 embedFonts()
 
 formatDate = (dateString) ->

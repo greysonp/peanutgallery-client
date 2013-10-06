@@ -1,0 +1,13 @@
+<h1>{{pageTitle}}</h1>
+<h2>Mark-Up</h2>
+<div class="tools">
+</div>
+<h2>Comments</h2>
+<ul class="gifics-comments">
+    {{#each comments}}
+        <li>
+            <p class="body">{{body}}</p>
+            <h3 class="date">By {{author.firstName}} {{author.lastName}} at {{date}}</h3>
+        </li>
+    {{/each}}
+</ul>
